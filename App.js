@@ -2,74 +2,72 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  // State to store the list of students
-  const [students, setStudents] = useState([]);
-  
-  // State for form inputs
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  // 1. STATE MANAGEMENT (Variables that React watches for changes)
+  const [students, setStudents] = useState([]); // Array to store all added student cards
+  const [name, setName] = useState('');         // Tracks what is typed in the Name input
+  const [email, setEmail] = useState('');       // Tracks what is typed in the Email input
 
-  // Handle form submission
+  // 2. FORM SUBMISSION HANDLER
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Interview tip: Stops the browser from refreshing the page!
     
-    // Validation: Ensure fields aren't empty
-    if (!name.trim() || !email.trim()) return;
+    if (!name.trim() || !email.trim()) return; // Validation check
 
-    // Create a new student object with a unique ID
+    // Create a new single student object
     const newStudent = {
-      id: Date.now(),
+      id: Date.now(), // Uses current timestamp as a unique ID for React loops
       name: name,
       email: email,
     };
 
-    // Update state with the new student and clear inputs
-    setStudents([...students, newStudent]);
-    setName('');
-    setEmail('');
+    // Update state immutably using the ES6 spread operator [...]
+    setStudents([...students, newStudent]); 
+    
+    // Clear out the input fields after adding
+    setName(''); 
+    setEmail(''); 
   };
 
-  // Handle deleting a student card
+  // 3. DELETE HANDLER
   const handleDelete = (id) => {
-    const updatedStudents = students.filter((student) => student.id !== id);
-    setStudents(updatedStudents);
+    // Keeps every student EXCEPT the one with the matching ID
+    const filteredStudents = students.filter((student) => student.id !== id);
+    setStudents(filteredStudents);
   };
 
   return (
     <div className="app-container">
-      {/* 1. Responsive Navbar */}
+      {/* REQUIREMENT 1: RESPONSIVE NAVBAR */}
       <nav className="navbar">
         <div className="navbar-logo">StudentPortal</div>
         <ul className="navbar-links">
           <li><a href="#home">Home</a></li>
-          <li><a href="#students">Students</a></li>
+          <li><a href="#dashboard">Dashboard</a></li>
         </ul>
       </nav>
 
       <main className="main-content">
-        {/* 2. Student Form */}
+        {/* REQUIREMENT 2: STUDENT FORM */}
         <section className="form-section">
           <h2>Register Student</h2>
           <form onSubmit={handleSubmit} className="student-form">
             <div className="form-group">
-              <label htmlFor="name">Name:</label>
+              <label>Name:</label>
               <input
                 type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter student name"
+                value={name} // State Binding
+                onChange={(e) => setName(e.target.value)} // Updates state on keystroke
+                placeholder="Enter full name"
                 required
               />
             </div>
             <div className="form-group">
-              <label htmlFor="email">Email:</label>
+              <label>Email:</label>
               <input
                 type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter student email"
+                value={email} // State Binding
+                onChange={(e) => setEmail(e.target.value)} // Updates state on keystroke
+                placeholder="Enter email address"
                 required
               />
             </div>
@@ -77,18 +75,20 @@ function App() {
           </form>
         </section>
 
-        {/* 3. Student Cards Display */}
+        {/* REQUIREMENT 3 & 4: DISPLAY DYNAMIC CARDS WITH DELETE BUTTON */}
         <section className="cards-section">
-          <h2>Student Directory</h2>
+          <h2>Registered Students</h2>
           {students.length === 0 ? (
             <p className="no-data">No students registered yet.</p>
           ) : (
             <div className="card-grid">
               {students.map((student) => (
                 <div key={student.id} className="student-card">
-                  <h3>{student.name}</h3>
-                  <p>{student.email}</p>
-                  {/* 4. Delete Button */}
+                  <div>
+                    <h3>{student.name}</h3>
+                    <p>{student.email}</p>
+                  </div>
+                  {/* Delete button triggers state change on click */}
                   <button 
                     onClick={() => handleDelete(student.id)} 
                     className="delete-btn"
